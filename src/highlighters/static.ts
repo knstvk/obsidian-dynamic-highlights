@@ -117,7 +117,14 @@ const staticHighlighter = ViewPlugin.fromClass(
           let cursor: RegExpCursor | SearchCursor;
           try {
             if (query.regex) cursor = new RegExpCursor(state.doc, query.query, {}, part.from, part.to);
-            else cursor = new SearchCursor(state.doc, query.query, part.from, part.to);
+            else {
+              let q = query.query
+              if (query.query === "{today}") {
+                q = new Date().toISOString().split('T')[0]
+                //console.log("highlighter plugin: detected {today}, using " + q)
+              }
+              cursor = new SearchCursor(state.doc, q, part.from, part.to);
+            }
           } catch (err) {
             console.debug(err);
             continue;
